@@ -1,0 +1,78 @@
+{% extends 'needle_app/base.html' %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-10">
+        <div class="card">
+            <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
+                <h4><i class="bi bi-hdd-network"></i> Initialization Checks</h4>
+                <a href="{% url 'needle_app:home' %}" class="btn btn-light btn-sm">Back to Home</a>
+            </div>
+            <div class="card-body">
+                <h5 class="mb-4">PLC Connections Status</h5>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Device Name</th>
+                                <th>IP Address</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for plc in plc_connections %}
+                            <tr>
+                                <td><i class="bi bi-cpu"></i> {{ plc.name }}</td>
+                                <td>{{ plc.ip }}</td>
+                                <td>
+                                    {% if plc.status == 'connected' %}
+                                    <span class="status-badge bg-success text-white">
+                                        <i class="bi bi-check-circle"></i> Connected
+                                    </span>
+                                    {% else %}
+                                    <span class="status-badge bg-danger text-white">
+                                        <i class="bi bi-x-circle"></i> Disconnected
+                                    </span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="text-center mt-5">
+                    <a href="{% url 'needle_app:inspection_status' %}"
+                        class="btn btn-success btn-lg d-inline-flex align-items-center justify-content-center"
+                        id="runBtn">
+                        <i class="bi bi-play-fill me-2"></i> Run Inspection Program
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.getElementById('runBtn').addEventListener('click', function () {
+        this.disabled = true;
+        this.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Starting...';
+
+        fetch('{% url "needle_app:run_inspection" %}', {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}'
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    window.location.href = '{% url "needle_app:inspection_status" %}';
+                }
+            });
+    });
+</script>
+{% endblock %}

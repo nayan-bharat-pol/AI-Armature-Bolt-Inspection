@@ -1,0 +1,43 @@
+{% extends 'needle_app/base.html' %}
+
+{% block content %}
+
+<div class="row justify-content-center mt-5">
+    <div class="col-md-10">
+        <h1 class="text-center text-black mb-5">AI Needle Inspection System</h1>
+        <div class="row g-4">
+            <div class="col-md-6">
+                <div class="card h-100 hover-card" style="cursor: pointer;"
+                    onclick="window.location.href='{% url 'needle_app:configuration' %}'">
+                    <div class="card-body text-center p-5">
+                        <i class="bi bi-sliders display-1 text-primary mb-3"></i>
+                        <h3 class="card-title">Configuration</h3>
+                        <p class="card-text text-muted">View and manage system configurations</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card h-100 hover-card" style="cursor: pointer;"
+                    onclick="window.location.href='{% url 'needle_app:initialization' %}'">
+                    <div class="card-body text-center p-5">
+                        <i class="bi bi-play-circle display-1 text-success mb-3"></i>
+                        <h3 class="card-title">Enter Application</h3>
+                        <p class="card-text text-muted">Start inspection process</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .hover-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .hover-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+    }
+</style>
+{% endblock %}

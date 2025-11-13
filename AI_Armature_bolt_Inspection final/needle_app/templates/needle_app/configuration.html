@@ -1,0 +1,194 @@
+{% extends 'needle_app/base.html' %}
+{% load static %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-10">
+        <div class="card">
+<div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+    <h4><i class="bi bi-sliders"></i> System Configuration</h4>
+    <div>
+        <a href="{% url 'needle_app:add_master_configuration' %}" class="btn btn-warning btn-sm me-2">
+            <i class="bi bi-plus-circle"></i> Master Configuration
+        </a>
+        <a href="{% url 'needle_app:home' %}" class="btn btn-light btn-sm">Back to Home</a>
+    </div>
+</div>
+
+         
+            <div class="card-body">
+                <form id="configForm" method="post" action="{% url 'needle_app:edit_configuration' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="config_id" value="{{ config.id }}">
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">LOG_FOLDER</label>
+                            <input type="text" class="form-control" name="log_folder" value="{{ config.log_folder }}"
+                                disabled>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">LOG_FILE</label>
+                            <input type="text" class="form-control" name="log_file" value="{{ config.log_file }}"
+                                disabled>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Debug mode</label>
+                            <input type="checkbox" class="form-check-input" name="debug_mode" >
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Logo Name</label>
+                            <input type="checkbox" class="form-check-input" name="save_mode">
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Number of Cameras</label>
+                            <input type="number" class="form-control" name="number_of_camera"
+                                value="{{ config.number_of_camera }}" disabled>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Camera IDs (comma separated)</label>
+                            <input type="text" class="form-control" name="camera_ids" value="{{ config.camera_ids }}"
+                                disabled>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Exposure</label>
+                            <input type="number" class="form-control" name="exposure" value="{{ config.exposure }}"
+                                disabled>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">AI Model Path</label>
+                            <input type="text" class="form-control" name="classification_model"
+                                value="{{ config.classification_model }}" disabled>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Resize Width</label>
+                            <input type="number" class="form-control" name="resize_width"
+                                value="{{ config.resize_width }}" disabled>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Resize Height</label>
+                            <input type="number" class="form-control" name="resize_height"
+                                value="{{ config.resize_height }}" disabled>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Bounding Box Thickness</label>
+                            <input type="number" class="form-control" name="bounding_box_thickness"
+                                value="{{ config.bounding_box_thickness }}" disabled>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Header Height</label>
+                            <input type="number" class="form-control" name="header_height"
+                                value="{{ config.header_height }}" disabled>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">PLC IP</label>
+                            <input type="text" class="form-control" name="plc_ip" value="{{ config.plc_ip }}" disabled>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Rack</label>
+                            <input type="number" class="form-control" name="rack" value="{{ config.rack }}" disabled>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Slot</label>
+                            <input type="number" class="form-control" name="slot" value="{{ config.slot }}" disabled>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">DB Number</label>
+                            <input type="number" class="form-control" name="db_number" value="{{ config.db_number }}"
+                                disabled>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Byte Index</label>
+                            <input type="number" class="form-control" name="byte_index" value="{{ config.byte_index }}"
+                                disabled>
+                        </div>
+
+                        <div class="col-md-12 mb-3">
+                            <label class="form-label">BitIndex Dict (JSON)</label>
+                            <textarea class="form-control" name="bitindex_dict" rows="3"
+                                disabled>{{ config.bitindex_dict|default:"{}" }}</textarea>
+                            <small class="text-muted">Example: {"stn1Read":0,"stn1WriteOK":1}</small>
+                        </div>
+                    </div>
+
+                    <div class="text-end mt-4">
+                        {% if user.is_authenticated and user.is_staff %}
+                        <button type="button" class="btn btn-warning" id="editBtn">
+                            <i class="bi bi-pencil"></i> Edit Configuration
+                        </button>
+                        <button type="submit" class="btn btn-success d-none" id="saveBtn">
+                            <i class="bi bi-save"></i> Save Changes
+                        </button>
+                        {% elif user.is_authenticated %}
+                        <p class="text-muted">You are logged in but not authorized to edit configuration.</p>
+                        {% else %}
+                        <a href="{% url 'admin:login' %}" class="btn btn-secondary">
+                            <i class="bi bi-lock"></i> Login to Edit
+                        </a>
+                        <input type="hidden" name="config_id" value="{{ config.id }}">
+
+                        {% endif %}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.getElementById('editBtn')?.addEventListener('click', function () {
+        document.querySelectorAll('#configForm input, #configForm textarea').forEach(input => {
+            input.disabled = false;
+        });
+        this.classList.add('d-none');
+        document.getElementById('saveBtn').classList.remove('d-none');
+    });
+
+    document.getElementById('configForm')?.addEventListener('submit', function (e) {
+        // default submission will send POST to view and page will reload with JSON redirect.
+        // We handle via fetch to show message without reloading immediately.
+        e.preventDefault();
+        const form = this;
+        const url = form.action;
+        const formData = new FormData(form);
+
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: formData
+        })
+            .then(r => r.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    alert(data.message);
+                    // reload to reflect saved values
+                    window.location.reload();
+                } else {
+                    alert(data.message || 'Error saving configuration.');
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                alert('Network error while saving configuration.');
+            });
+    });
+</script>
+{% endblock %}
